@@ -2,17 +2,6 @@ const fs = require("fs");
 const todos = require("./../../db/models/todos");
 const Todos = require("./../../db/models/todos");
 
-let accounts = [];
-
-fs.readFile("./db/accounts.json", (err, data) => {
-  if (err) {
-    console.log(err);
-    return err;
-  } else {
-    accounts = JSON.parse(data.toString());
-  }
-});
-
 const getTodos = (req, res) => {
   const { userName } = req.params;
 

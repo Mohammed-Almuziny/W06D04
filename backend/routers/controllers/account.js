@@ -2,17 +2,6 @@ const { response } = require("express");
 const fs = require("fs");
 const Accounts = require("./../../db/models/accounts");
 
-let accounts = [];
-
-fs.readFile("./db/accounts.json", (err, data) => {
-  if (err) {
-    console.log(err);
-    return err;
-  } else {
-    accounts = JSON.parse(data.toString());
-  }
-});
-
 const sginIn = (req, res) => {
   const account = new Accounts(req.body);
 
