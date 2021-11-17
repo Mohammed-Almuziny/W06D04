@@ -1,4 +1,6 @@
+const { response } = require("express");
 const fs = require("fs");
+const Accounts = require("./../../db/models/accounts");
 
 let accounts = [];
 
@@ -13,25 +15,63 @@ fs.readFile("./db/accounts.json", (err, data) => {
 
 const sginIn = (req, res) => {
   const newAccount = req.body;
-  newAccount.todos = [];
+  let key;
 
-  accounts.forEach((elm) => {
-    if (elm.userName === newAccount.userName)
-      res.status(403).json("user name already exists");
-    if (elm.email === newAccount.email)
-      res.status(403).json("email already exists");
-  });
+  const account = new Accounts(req.body);
 
-  accounts.push(newAccount);
+  Accounts.find((err, data) => {
+    let key;
+    data.find((elm) => {
+      if (elm.userName === newAccount.userName) {
+        key = 1;
+      }
+      if (elm.email === newAccount.email) {
+        key = 2;
+      }
+    });
 
-  fs.writeFile("./db/accounts.json", JSON.stringify(accounts), (err) => {
-    if (err) {
-      console.log(err);
-      return err;
-    } else {
-      res.status(200).json(accounts);
+    switch (key) {
+      case 1:
+        res.status(403).json("user name already exists");
+        break;
+
+      case 2:
+        res.status(403).json("email already exists");
+        break;
+
+      default:
+        account
+          .save()
+          .then((result) => {
+            res.status(200).json(account);
+          })
+          .catch((err) => {
+            res.json(err);
+          });
+
+        break;
     }
   });
+
+  // newAccount.todos = [];
+
+  // accounts.forEach((elm) => {
+  //   if (elm.userName === newAccount.userName)
+  //     res.status(403).json("user name already exists");
+  //   if (elm.email === newAccount.email)
+  //     res.status(403).json("email already exists");
+  // });
+
+  // accounts.push(newAccount);
+
+  // fs.writeFile("./db/accounts.json", JSON.stringify(accounts), (err) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return err;
+  //   } else {
+  //     res.status(200).json(accounts);
+  //   }
+  // });
 };
 
 const logIn = (req, res) => {
