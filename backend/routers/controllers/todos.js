@@ -76,31 +76,23 @@ const changeTodos = async (req, res) => {
 
   let result = await Todos.findOneAndUpdate(filter, update, { new: true });
 
-  res.status(200).json(result)
+  res.status(200).json(result);
 };
 
 const deleteTodo = (req, res) => {
   const { userName, targetTodo } = req.params;
-  let index;
+  console.log(userName, targetTodo);
 
-  accounts.find((account, i) => {
-    if (account.userName === userName) {
-      index = i;
+  Todos.findOneAndRemove(
+    { userName: userName, task: targetTodo },
+    (err, data) => {
+      if (err) {
+        res.status(400).json(err);
+      } else {
+        res.status(200).json(data);
+      }
     }
-  });
-
-  accounts[index].todos = accounts[index].todos.filter(
-    (todo) => todo !== targetTodo
   );
-
-  fs.writeFile("./db/accounts.json", JSON.stringify(accounts), (err) => {
-    if (err) {
-      console.log(err);
-      return err;
-    } else {
-      res.status(200).json(accounts);
-    }
-  });
 };
 
 module.exports = { getTodos, addTodos, changeTodos, deleteTodo };
