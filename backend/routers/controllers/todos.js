@@ -1,4 +1,5 @@
 const fs = require("fs");
+const Todos = require("./../../db/models/todos");
 
 let accounts = [];
 
@@ -20,20 +21,47 @@ const getTodos = (req, res) => {
 };
 
 const addTodos = (req, res) => {
-  const { userName, todo } = req.params;
+  const { userName, task } = req.params;
 
-  accounts.forEach((account) => {
-    if (account.userName === userName) account.todos.push(todo);
+  const todo = new Todos({
+    userName,
+    task,
   });
 
-  fs.writeFile("./db/accounts.json", JSON.stringify(accounts), (err) => {
-    if (err) {
-      console.log(err);
-      return err;
+  Todos.find((err, data) => {
+    const users = data.map((elm) => {
+      if (elm.userName === userName) return elm;
+    });
+
+    console.log(users);
+    const found = users.find((elm) => elm.task === task);
+
+    if (found) {
+      res.status(400).json("task already exists");
     } else {
-      res.status(200).json(accounts);
+      todo
+        .save()
+        .then((result) => {
+          res.status(200).json(todo);
+        })
+        .catch((err) => {
+          res.json(err);
+        });
     }
   });
+
+  // accounts.forEach((account) => {
+  //   if (account.userName === userName) account.todos.push(todo);
+  // });
+
+  // fs.writeFile("./db/accounts.json", JSON.stringify(accounts), (err) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return err;
+  //   } else {
+  //     res.status(200).json(accounts);
+  //   }
+  // });
 };
 
 const changeTodos = (req, res) => {

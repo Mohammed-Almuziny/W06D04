@@ -10,7 +10,7 @@ const {
 const todosRouter = express.Router();
 
 todosRouter.get("/getTodos/:userName", getTodos);
-todosRouter.post("/addTodos/:userName/:todo", addTodos);
+todosRouter.post("/addTodos/:userName/:task", addTodos);
 todosRouter.put("/changeTodos/:userName/:oldTodo/:newTodo", changeTodos);
 todosRouter.delete("/deleteTodo/:userName/:targetTodo", deleteTodo);
 
