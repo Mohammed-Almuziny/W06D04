@@ -1,4 +1,5 @@
 const fs = require("fs");
+const todos = require("./../../db/models/todos");
 const Todos = require("./../../db/models/todos");
 
 let accounts = [];
@@ -15,9 +16,17 @@ fs.readFile("./db/accounts.json", (err, data) => {
 const getTodos = (req, res) => {
   const { userName } = req.params;
 
-  const target = accounts.find((account) => account.userName === userName);
+  todos.find((err, data) => {
+    const users = data.map((elm) => {
+      if (elm.userName === userName) return elm;
+    });
 
-  res.status(200).json(target.todos);
+    console.log(users);
+    res.status(200).json(users);
+  });
+  // const target = accounts.find((account) => account.userName === userName);
+
+  // res.status(200).json(target.todos);
 };
 
 const addTodos = (req, res) => {
@@ -29,16 +38,11 @@ const addTodos = (req, res) => {
   });
 
   Todos.find((err, data) => {
-    const users = data.map((elm) => {
+    const users = data.filter((elm) => {
       if (elm.userName === userName) return elm;
     });
 
-    console.log(users);
-    const found = users.find((elm) => elm.task === task);
-
-    if (found) {
-      res.status(400).json("task already exists");
-    } else {
+    if (!users[0]) {
       todo
         .save()
         .then((result) => {
@@ -47,21 +51,24 @@ const addTodos = (req, res) => {
         .catch((err) => {
           res.json(err);
         });
+    } else {
+      console.log(users);
+      const found = users.find((elm) => elm.task === task);
+
+      if (found) {
+        res.status(400).json("task already exists");
+      } else {
+        todo
+          .save()
+          .then((result) => {
+            res.status(200).json(todo);
+          })
+          .catch((err) => {
+            res.json(err);
+          });
+      }
     }
   });
-
-  // accounts.forEach((account) => {
-  //   if (account.userName === userName) account.todos.push(todo);
-  // });
-
-  // fs.writeFile("./db/accounts.json", JSON.stringify(accounts), (err) => {
-  //   if (err) {
-  //     console.log(err);
-  //     return err;
-  //   } else {
-  //     res.status(200).json(accounts);
-  //   }
-  // });
 };
 
 const changeTodos = (req, res) => {
