@@ -17,16 +17,13 @@ const getTodos = (req, res) => {
   const { userName } = req.params;
 
   todos.find((err, data) => {
-    const users = data.map((elm) => {
+    const users = data.filter((elm) => {
       if (elm.userName === userName) return elm;
     });
 
     console.log(users);
     res.status(200).json(users);
   });
-  // const target = accounts.find((account) => account.userName === userName);
-
-  // res.status(200).json(target.todos);
 };
 
 const addTodos = (req, res) => {
