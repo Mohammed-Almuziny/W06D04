@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+require("./db")
 
 const accountRouter = require("./routers/routes/account");
 const todosRouter = require("./routers/routes/todos");
