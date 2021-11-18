@@ -8,10 +8,10 @@ const sginIn = (req, res) => {
   Accounts.find((err, data) => {
     let key;
     data.find((elm) => {
-      if (elm.userName === newAccount.userName) {
+      if (elm.userName === account.userName) {
         key = 1;
       }
-      if (elm.email === newAccount.email) {
+      if (elm.email === account.email) {
         key = 2;
       }
     });
